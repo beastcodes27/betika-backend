@@ -8,8 +8,12 @@
     <!-- Profile Overview Card -->
     <div class="bg-forest-card border border-forest-border p-6 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div class="flex items-center gap-4">
-            <div class="w-16 h-16 rounded-2xl flex items-center justify-center font-black text-white text-2xl shadow" style="background-color: {{ $profile->avatar_bg ?? '#3B82F6' }}">
-                {{ substr($profile->display_name ?? 'T', 0, 1) }}
+            <div class="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center font-black text-white text-2xl shadow border-2 border-[#DDD06A] bg-forest-dark">
+                @if($profile->avatar_url ?? false)
+                    <img src="{{ $profile->avatar_url }}" alt="{{ $profile->display_name ?? 'Tipster' }}" class="w-full h-full object-cover">
+                @else
+                    {{ substr($profile->display_name ?? 'T', 0, 1) }}
+                @endif
             </div>
             <div>
                 <div class="flex items-center gap-2">
@@ -25,6 +29,10 @@
         </div>
 
         <div class="flex items-center gap-3">
+            <a href="{{ route('tipster.profile.edit') }}" class="px-4 py-2.5 bg-forest-dark border border-forest-border hover:border-gold text-gray-200 font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                Profile & Photo
+            </a>
             @if($profile->can_publish ?? false)
                 <a href="{{ route('tipster.slips.create') }}" class="px-5 py-2.5 bg-neon hover:bg-neon/90 text-forest-dark font-black text-sm rounded-xl transition shadow">
                     + Publish Bookmaker Slip
