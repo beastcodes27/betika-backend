@@ -37,8 +37,12 @@
                         <tr class="hover:bg-forest-dark/40 transition">
                             <td class="p-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-white text-base shadow" style="background-color: {{ $tipster->avatar_bg }}">
-                                        {{ substr($tipster->display_name, 0, 1) }}
+                                    <div class="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center font-black text-white text-base shadow border border-forest-border bg-forest-dark" style="background-color: {{ $tipster->avatar_bg }}">
+                                        @if($tipster->avatar_url)
+                                            <img src="{{ $tipster->avatar_url }}" alt="{{ $tipster->display_name }}" class="w-full h-full object-cover">
+                                        @else
+                                            {{ substr($tipster->display_name, 0, 1) }}
+                                        @endif
                                     </div>
                                     <div>
                                         <p class="font-extrabold text-white text-sm flex items-center gap-1.5">
@@ -109,6 +113,15 @@
                                     <a href="{{ route('admin.tipsters.edit', $tipster) }}" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-forest-inner text-gray-200 hover:text-white border border-forest-border transition">
                                         Edit
                                     </a>
+
+                                    @if($tipster->avatar_url)
+                                        <form action="{{ route('admin.tipsters.reset-avatar', $tipster) }}" method="POST" onsubmit="return confirm('Reset this tipster avatar picture to default initials?');">
+                                            @csrf
+                                            <button type="submit" class="px-2 py-1.5 rounded-lg text-[10px] font-bold text-amber-300 bg-amber-950/40 border border-amber-600/30 hover:bg-amber-900/50" title="Reset Inappropriate Avatar">
+                                                Reset Pic
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

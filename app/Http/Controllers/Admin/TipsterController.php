@@ -82,6 +82,22 @@ class TipsterController extends Controller
         return back()->with('success', "Tipster {$tipster->display_name} suspended from publishing.");
     }
 
+    public function resetAvatar(TipsterProfile $tipster): RedirectResponse
+    {
+        if ($tipster->avatar_path && \Illuminate\Support\Facades\File::exists(public_path($tipster->avatar_path))) {
+            \Illuminate\Support\Facades\File::delete(public_path($tipster->avatar_path));
+        }
+
+        $tipster->update([
+            'avatar_url' => null,
+            'avatar_path' => null,
+            'avatar_mime' => null,
+            'avatar_uploaded_at' => null,
+        ]);
+
+        return back()->with('success', "Profile picture for {$tipster->display_name} has been reset to default initials.");
+    }
+
     public function destroy(TipsterProfile $tipster): RedirectResponse
     {
         $user = $tipster->user;
