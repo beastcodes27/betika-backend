@@ -29,6 +29,9 @@ Route::prefix('v1')->group(function () {
     // Community voting poll
     Route::post('/polls/{communityPoll}/vote', [MobileApiController::class, 'votePoll'])->name('api.polls.vote');
 
+    // Tipster profile picture upload from mobile client
+    Route::post('/tipster/avatar', [MobileApiController::class, 'uploadAvatar'])->name('api.tipster.avatar');
+
     // Health check
     Route::get('/status', function () {
         return response()->json([

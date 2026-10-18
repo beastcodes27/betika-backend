@@ -63,6 +63,7 @@ All mobile endpoints are exposed under `/api/v1/`:
 | `POST` | `/api/v1/betslips/{id}/unlock` | Unlock single VIP betslip using Tshs pass |
 | `POST` | `/api/v1/ads/{id}/click` | Track ad banner interaction and click counter |
 | `POST` | `/api/v1/polls/{id}/vote` | Cast community prediction vote on a match poll |
+| `POST` | `/api/v1/tipster/avatar` | Upload and update tipster portrait profile picture (multipart image) |
 | `GET` | `/api/v1/status` | System health check and currency configuration |
 
 ---

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\TipsterAdminController;
 use App\Http\Controllers\Admin\TransactionAdminController;
 use App\Http\Controllers\Admin\VipAdminController;
 use App\Http\Controllers\Tipster\TipsterDashboardController;
+use App\Http\Controllers\Tipster\TipsterProfileController;
 use App\Http\Controllers\Tipster\TipsterSlipController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -57,6 +58,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/{tipster}/reject', [TipsterAdminController::class, 'reject'])->name('reject');
         Route::post('/{tipster}/toggle-badge', [TipsterAdminController::class, 'toggleBadge'])->name('toggle-badge');
         Route::post('/{tipster}/toggle-suspend', [TipsterAdminController::class, 'toggleSuspend'])->name('toggle-suspend');
+        Route::post('/{tipster}/reset-avatar', [TipsterAdminController::class, 'resetAvatar'])->name('reset-avatar');
     });
 
     // Betslip Management & Status Updates
@@ -122,4 +124,10 @@ Route::prefix('tipster')->name('tipster.')->group(function () {
     Route::get('/slips/create', [TipsterSlipController::class, 'create'])->name('slips.create');
     Route::post('/slips', [TipsterSlipController::class, 'store'])->name('slips.store');
     Route::delete('/slips/{betslip}', [TipsterSlipController::class, 'destroy'])->name('slips.destroy');
+
+    // Tipster Profile Management & Avatar Upload
+    Route::get('/profile', [TipsterProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile', [TipsterProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/avatar', [TipsterProfileController::class, 'uploadAvatar'])->name('profile.upload-avatar');
+    Route::post('/profile/avatar/remove', [TipsterProfileController::class, 'removeAvatar'])->name('profile.remove-avatar');
 });

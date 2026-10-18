@@ -55,8 +55,7 @@ class MobileApiController extends Controller
 
         // Verified top tipsters
         $topTipsters = TipsterProfile::with('user')
-            ->where('verification_status', 'verified')
-            ->where('is_suspended', false)
+            ->where('is_verified', true)
             ->orderByDesc('win_rate')
             ->take(6)
             ->get()
@@ -64,11 +63,11 @@ class MobileApiController extends Controller
                 return [
                     'id' => $tp->id,
                     'displayName' => $tp->display_name,
-                    'avatarUrl' => $tp->avatar_url,
+                    'avatarUrl' => $tp->avatar_url ?? asset('uploads/avatars/juma.png'),
                     'specialty' => $tp->specialty,
                     'winRate' => (float) $tp->win_rate,
                     'followersCount' => $tp->followers_count,
-                    'isVerified' => $tp->is_verified,
+                    'isVerified' => (bool) $tp->is_verified,
                 ];
             });
 
@@ -133,9 +132,10 @@ class MobileApiController extends Controller
                 'tipster' => $slip->tipster ? [
                     'id' => $slip->tipster->id,
                     'name' => $slip->tipster->display_name,
-                    'avatar' => $slip->tipster->avatar_url,
+                    'avatar' => $slip->tipster->avatar_url ?? asset('uploads/avatars/juma.png'),
+                    'avatarUrl' => $slip->tipster->avatar_url ?? asset('uploads/avatars/juma.png'),
                     'winRate' => (float) $slip->tipster->win_rate,
-                    'isVerified' => $slip->tipster->is_verified,
+                    'isVerified' => (bool) $slip->tipster->is_verified,
                 ] : null,
                 'bookmaker' => $slip->bookmaker ? [
                     'id' => $slip->bookmaker->id,
@@ -248,6 +248,50 @@ class MobileApiController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $communityPoll,
+        ]);
+    }
+
+    /**
+     * Upload tipster profile picture from mobile app client.
+     */
+    public function uploadAvatar(Request $request)
+    {
+        $request->validate([
+            'tipster_id' => 'required|exists:tipster_profiles,id',
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,webp|max:3072',
+        ]);
+
+        $tipster = TipsterProfile::findOrFail($request->tipster_id);
+        $file = $request->file('avatar');
+        $extension = $file->getClientOriginalExtension();
+        $fileName = 'mobile_tipster_' . $tipster->id . '_' . time() . '.' . $extension;
+        $uploadDir = public_path('uploads/avatars');
+
+        if (!\Illuminate\Support\Facades\File::exists($uploadDir)) {
+            \Illuminate\Support\Facades\File::makeDirectory($uploadDir, 0755, true);
+        }
+
+        if ($tipster->avatar_path && \Illuminate\Support\Facades\File::exists(public_path($tipster->avatar_path))) {
+            \Illuminate\Support\Facades\File::delete(public_path($tipster->avatar_path));
+        }
+
+        $file->move($uploadDir, $fileName);
+        $relativePath = 'uploads/avatars/' . $fileName;
+
+        $tipster->update([
+            'avatar_url' => asset($relativePath),
+            'avatar_path' => $relativePath,
+            'avatar_mime' => $file->getClientMimeType() ?? ('image/' . $extension),
+            'avatar_uploaded_at' => now(),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Profile picture uploaded successfully!',
+            'data' => [
+                'tipsterId' => $tipster->id,
+                'avatarUrl' => $tipster->avatar_url,
+            ],
         ]);
     }
 }
