@@ -15,6 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('phone')->nullable()->index();
+            $table->enum('role', ['super_admin', 'tipster', 'user'])->default('user')->index();
+            $table->string('avatar')->nullable();
+            $table->decimal('wallet_balance', 12, 2)->default(0.00);
+            $table->boolean('is_active')->default(true);
+            $table->string('status')->default('active');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
