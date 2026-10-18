@@ -1,58 +1,126 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# BetWinner Super Admin & Mobile Backend API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Welcome to the **BetWinner Backend & Super Admin Panel**, built with Laravel 11 and tailored for sports betting insights, tipster management, and seamless React Native mobile app synchronization.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Architecture & Role System
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The platform enforces a strict three-tier role-based access model:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. **Super Admin (`super_admin`)**:
+   - Manages and approves tipster registrations, verification badges, and account suspensions.
+   - Settle betslips outcomes (`active`, `won`, `lost`, `void`).
+   - Manages the **Auto-Scrolling Ads Board** with 3-second rotator frequency.
+   - Publishes **Featured Big Matches** with odds, venue analytics, and key insights.
+   - Creates and oversees interactive **Community Match Voting Polls**.
+   - Manages **VIP Subscription Tiers** (Daily, Weekly, Monthly, Season passes) and grants/revokes access.
+   - Audits the **Financial Ledger** for Vodacom M-Pesa, Airtel Money, and Tigo Pesa payments in Tanzanian Shillings (**Tshs**).
+   - Configures real bookmaker integrations (**Betika**, **SportyBet**, **1xBet**, **MozzartBet**, **Betway**).
 
-## Learning Laravel
+2. **Tipster (`tipster`)**:
+   - Must be verified and approved by the Super Admin before publishing.
+   - Accesses a dedicated **Tipster Publishing Portal** (`/tipster/dashboard`).
+   - Publishes structured betslips containing match selections, odds, confidence ratings, and bookmaker booking codes.
+   - Tracks personal analytics: slip win rates, won/lost tallies, and active slips.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+3. **User (`user`)**:
+   - Mobile app end-users consuming free and VIP tips.
+   - Promo codes and bookmaker booking codes are kept protected behind VIP subscription / unlock passes.
+   - Casts votes in community match prediction polls.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Key Features
 
-## Agentic Development
+- **Tanzanian Shillings (`Tshs`) Currency**:
+  - All financial transactions, subscriptions, stake amounts, and potential returns are formatted strictly in `Tshs`.
+- **Auto-Scrolling Ads Board**:
+  - Rotates banner cards automatically every **3 seconds** seamlessly without distracting UI indicators.
+  - Promo codes remain protected until clicked or claimed by users.
+- **Real Bookmaker Integrations**:
+  - Dedicated configuration for Tanzania's top betting companies:
+    - **Betika**
+    - **SportyBet**
+    - **1xBet**
+    - **MozzartBet**
+    - **Betway**
+- **VIP Paywall Logic**:
+  - VIP betslip promo codes and booking codes are obfuscated (`******`) on mobile API responses until the user unlocks them via active subscription or single slip pass.
+- **Forest Green & Gold UI Theme**:
+  - Blade super admin panel matches the mobile app design aesthetic with Forest Green (`#013220`), Gold (`#DDD06A`), and Neon Green (`#39FF88`).
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
 
-```bash
-composer require laravel/boost --dev
+## Mobile REST API Endpoints
 
-php artisan boost:install
-```
+All mobile endpoints are exposed under `/api/v1/`:
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/v1/home` | Home screen feed: 3s ads rotator, featured big game, active poll, and top tipsters |
+| `GET` | `/api/v1/betslips` | List active betslips (obfuscates VIP booking codes if unauthenticated/unsubscribed) |
+| `POST` | `/api/v1/betslips/{id}/unlock` | Unlock single VIP betslip using Tshs pass |
+| `POST` | `/api/v1/ads/{id}/click` | Track ad banner interaction and click counter |
+| `POST` | `/api/v1/polls/{id}/vote` | Cast community prediction vote on a match poll |
+| `GET` | `/api/v1/status` | System health check and currency configuration |
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Quick Setup & Installation
 
-## Code of Conduct
+### Requirements
+- PHP 8.2 or higher (with `pdo_mysql`, `mbstring`, `openssl`, `tokenizer`, `xml`)
+- MySQL 8.0+ or MariaDB 10.4+
+- Composer
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Installation Steps
 
-## Security Vulnerabilities
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/beastcodes27/betika-backend.git
+   cd betika-backend
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+2. **Configure Environment**:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-## License
+   Update your database credentials in `.env`:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=betwinner
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+3. **Run Migrations & Seeders**:
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
+
+4. **Launch Local Server**:
+   ```bash
+   php artisan serve
+   ```
+
+---
+
+## Default Seeded Credentials
+
+| Role | Email | Password | Access Portal |
+|---|---|---|---|
+| **Super Admin** | `admin@betwinner.co.tz` | `password` | `http://127.0.0.1:8000/admin` |
+| **Top Tipster (Juma)** | `juma@betwinner.co.tz` | `password` | `http://127.0.0.1:8000/tipster/dashboard` |
+| **Verified Tipster (Kassim)** | `kassim@betwinner.co.tz` | `password` | `http://127.0.0.1:8000/tipster/dashboard` |
+| **End User** | `user@betwinner.co.tz` | `password` | Mobile App API (`/api/v1`) |
+
+---
+
+## Repository
+- **Backend & Super Admin**: [https://github.com/beastcodes27/betika-backend.git](https://github.com/beastcodes27/betika-backend.git)
+- **Frontend Mobile App**: [https://github.com/beastcodes27/betwinner.git](https://github.com/beastcodes27/betwinner.git)
