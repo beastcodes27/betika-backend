@@ -23,6 +23,18 @@ Route::prefix('v1')->group(function () {
     Route::get('/betslips', [MobileApiController::class, 'betslips'])->name('api.betslips');
     Route::post('/betslips/{betslip}/unlock', [MobileApiController::class, 'unlockSlip'])->name('api.betslips.unlock');
 
+    // Verified tipsters feed
+    Route::get('/tipsters', [MobileApiController::class, 'tipsters'])->name('api.tipsters');
+
+    // Mobile user profile, purchased slips & wallet ledger
+    Route::get('/profile', [MobileApiController::class, 'profile'])->name('api.profile');
+    Route::post('/profile/avatar', [MobileApiController::class, 'uploadProfileAvatar'])->name('api.profile.avatar');
+    Route::post('/profile/avatar/remove', [MobileApiController::class, 'removeProfileAvatar'])->name('api.profile.avatar.remove');
+
+    // VIP plans & subscriptions
+    Route::get('/vip/plans', [MobileApiController::class, 'vipPlans'])->name('api.vip.plans');
+    Route::post('/vip/subscribe', [MobileApiController::class, 'subscribeVip'])->name('api.vip.subscribe');
+
     // Ads board tracking
     Route::post('/ads/{homeAd}/click', [MobileApiController::class, 'trackAdClick'])->name('api.ads.click');
 
